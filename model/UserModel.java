@@ -1,59 +1,76 @@
 package model;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserModel {
-    
-    // Database connection details (Using SQLite for local DB without needing a server)
-    private static final String DB_URL = "jdbc:sqlite:database.db";
 
-    static {
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            System.err.println("SQLite JDBC driver not found!");
-            e.printStackTrace();
-        }
-    }
+    // File-based database (pure Java, no external libraries needed)
+    private static final String DB_FILE = "users.txt";
+    private HashMap<String, String> users = new HashMap<>();
 
     public UserModel() {
-        // Initialize the database and create table if not exists
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement stmt = conn.prepareStatement(
-                "CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT)")) {
-            stmt.executeUpdate();
-            
-            // Insert default user if table is empty
-            try (PreparedStatement insertStmt = conn.prepareStatement("INSERT OR IGNORE INTO users (username, password) VALUES ('admin', '1234')")) {
-                insertStmt.executeUpdate();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        loadUsers();
+
+        // Insert default user if database is empty
+        if (users.isEmpty()) {
+            users.put("admin", "1234");
+            saveUsers();
+            System.out.println("Database created with default user: admin/1234");
+        } else {
+            System.out.println("Database loaded. Total users: " + users.size());
         }
     }
 
+    // Validate user credentials against the database
     public boolean validateUser(String username, String password) {
-        String query = "SELECT * FROM users WHERE username = ? AND password = ?";
-        
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-            pstmt.setString(1, username);
-            pstmt.setString(2, password);
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return true; // User found in DB
+        String storedPassword = users.get(username);
+        return storedPassword != null && storedPassword.equals(password);
+    }
+
+    // Add a new user to the database
+    public boolean addUser(String username, String password) {
+        if (users.containsKey(username)) {
+            return false; // User already exists
+        }
+        users.put(username, password);
+        saveUsers();
+        return true;
+    }
+
+    // Get all users (for viewing the database)
+    public HashMap<String, String> getAllUsers() {
+        return new HashMap<>(users);
+    }
+
+    // Load users from file
+    private void loadUsers() {
+        File file = new File(DB_FILE);
+        if (!file.exists()) return;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length == 2) {
+                    users.put(parts[0], parts[1]);
                 }
             }
-        } catch (Exception e) {
-            System.err.println("Database error during validation:");
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Error loading database: " + e.getMessage());
         }
-        
-        return false; // User not found or DB error
+    }
+
+    // Save users to file
+    private void saveUsers() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(DB_FILE))) {
+            for (Map.Entry<String, String> entry : users.entrySet()) {
+                writer.write(entry.getKey() + "|" + entry.getValue());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving database: " + e.getMessage());
+        }
     }
 }
