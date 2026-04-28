@@ -10,6 +10,15 @@ public class UserModel {
     // Database connection details (Using SQLite for local DB without needing a server)
     private static final String DB_URL = "jdbc:sqlite:database.db";
 
+    static {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            System.err.println("SQLite JDBC driver not found!");
+            e.printStackTrace();
+        }
+    }
+
     public UserModel() {
         // Initialize the database and create table if not exists
         try (Connection conn = DriverManager.getConnection(DB_URL);

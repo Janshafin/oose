@@ -1,0 +1,13 @@
+# Compiled class files
+*.class
+
+# SQLite database (generated at runtime)
+database.db
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+*.iml
+.vscode/
