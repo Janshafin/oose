@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: #764ba2;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        .content {
+            padding: 50px;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: inline-block;
+            max-width: 600px;
+            width: 100%;
+        }
+        .card h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        .card p {
+            color: #666;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Student Information System</h2>
+        <a href="/">Logout</a>
+    </div>
+    <div class="content">
+        <div class="card">
+            <h2>Welcome to your Dashboard</h2>
+            <p>You have successfully logged into the system.</p>
+        </div>
+    </div>
+</body>
+</html>
